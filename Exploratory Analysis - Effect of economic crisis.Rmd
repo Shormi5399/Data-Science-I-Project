@@ -96,7 +96,7 @@ unemp_data <- clean_unemp[,!colnames(clean_unemp) %in% c("Indicator.Name","Indic
 head(unemp_data)
 
 
-gdp = read.csv("gdp_data_wb.csv",check.names = FALSE)
+gdp = read.csv("gdp.csv",check.names = FALSE)
 country_indicator_names <- make.names(names(gdp[c(1:4)])) 
 #country_indicator_names
 
@@ -299,7 +299,7 @@ unemployment_data_1 <- labor_data %>%
   select(Country.Name,Country.Code,Year,unemp) %>%
   filter(Year >= 2000 & Year<= 2015 & (Country.Code =='IND' | Country.Code == 'CAN' | Country.Code == 'USA'|Country.Code == 'CHN')) %>%
   group_by(Year)
-ggplot(unemployment_data_1, aes(x = Year, y = unemp,col = Country.Code, group = Country.Code))+geom_line()
+ggplot(unemployment_data_1, aes(x = Year, y = unemp,col = Country.Code, group = Country.Code))+geom_line(na.rm = T)
 ```
 
 We see that the unemployment rates increases drastically in Canada and USA after 2007 crisis(2008 recession). 
