@@ -12,7 +12,14 @@ library(tidyr)
 library(dplyr)
 ```
 
-### Conduct a first-pass descriptive analysis of your dataset. Produce tables and graphs that show exactly what data you have, and that contain summary statistics about the data. Questions to answer for each data source include:
+Conduct a first-pass descriptive analysis of your dataset. Produce tables and graphs that show exactly what data you have, and that contain summary statistics about the data. Questions to answer for each data source include:
+How many unique observations to you have?
+What information/features/characteristics do you have for each observation?
+What are the min/max/mean/median/sd values for each of these features?
+What is the distribution of the core features (show a histogram)?
+Are there obvious trends in the data (over time, across subgroups, etc.), and are the differences statistically significant?
+What are the other salient aspects of the data (e.g. geospatial factors, text content, etc.)
+Provide a bullet-list of the next 5-10 tasks you will perform in analyzing your dataset
 
 Cleaning up the data!
 
@@ -28,10 +35,12 @@ year_column_names <- names(cpi[c(5:ncol(cpi))])
 
 #Reassign the modified column names to actual column names
 names(cpi) <- c(country_indicator_names,year_column_names)
+names(cpi)
 
 #Gather all year column names into a new column called Year and assign its values to a column called CPI
 clean_cpi <- gather(cpi,Year,CPI,-Country.Name,-Country.Code,-Indicator.Name,-Indicator.Code)
 cpi_data <- clean_cpi[,!colnames(clean_cpi) %in% c("Indicator.Name","Indicator.Code")]
+head(clean_cpi)
 
 
 cpi = read.csv("CPI_World_Bank.csv",check.names = FALSE)
@@ -45,10 +54,12 @@ year_column_names <- names(cpi[c(5:ncol(cpi))])
 
 #Reassign the modified column names to actual column names
 names(cpi) <- c(country_indicator_names,year_column_names)
+names(cpi)
 
 #Gather all year column names into a new column called Year and assign its values to a column called CPI
 clean_cpi <- gather(cpi,Year,CPI,-Country.Name,-Country.Code,-Indicator.Name,-Indicator.Code)
 cpi_data <- clean_cpi[,!colnames(clean_cpi) %in% c("Indicator.Name","Indicator.Code")]
+head(cpi_data)
 
 unemp = read.csv("Unemployment_ILO.csv",check.names = FALSE)
 country_indicator_names <- make.names(names(unemp[c(1:4)])) 
@@ -60,10 +71,12 @@ year_column_names <- names(unemp[c(5:ncol(unemp))])
 
 #Reassign the modified column names to actual column names
 names(unemp) <- c(country_indicator_names,year_column_names)
+names(unemp)
 
 #Gather all year column names into a new column called Year and assign its values to a column called unemp
 clean_unemp <- gather(unemp,Year,unemp,-Country.Name,-Country.Code,-Indicator.Name,-Indicator.Code)
 unemp_data <- clean_unemp[,!colnames(clean_unemp) %in% c("Indicator.Name","Indicator.Code")]
+head(clean_unemp)
 
 #Get country and indicator column names and remove spaces using make.names
 country_indicator_names <- make.names(names(unemp[c(1:4)]))
@@ -75,10 +88,13 @@ year_column_names <- names(unemp[c(5:ncol(unemp))])
 
 #Reassign the modified column names to actual column names
 names(unemp) <- c(country_indicator_names,year_column_names)
+names(unemp)
 
 #Gather all year column names into a new column called Year and assign its values to a column called unemp
 clean_unemp <- gather(unemp,Year,unemp,-Country.Name,-Country.Code,-Indicator.Name,-Indicator.Code)
 unemp_data <- clean_unemp[,!colnames(clean_unemp) %in% c("Indicator.Name","Indicator.Code")]
+head(unemp_data)
+
 
 gdp = read.csv("gdp.csv",check.names = FALSE)
 country_indicator_names <- make.names(names(gdp[c(1:4)])) 
@@ -90,10 +106,12 @@ year_column_names <- names(gdp[c(5:ncol(gdp))])
 
 #Reassign the modified column names to actual column names
 names(gdp) <- c(country_indicator_names,year_column_names)
+names(gdp)
 
 #Gather all year column names into a new column called Year and assign its values to a column called gdp
 clean_gdp <- gather(gdp,Year,gdp,-Country.Name,-Country.Code,-Indicator.Name,-Indicator.Code)
 gdp_data <- clean_gdp[,!colnames(clean_gdp) %in% c("Indicator.Name","Indicator.Code")]
+head(clean_gdp)
 
 #Get country and indicator column names and remove spaces using make.names
 country_indicator_names <- make.names(names(gdp[c(1:4)]))
@@ -105,10 +123,13 @@ year_column_names <- names(gdp[c(5:ncol(gdp))])
 
 #Reassign the modified column names to actual column names
 names(gdp) <- c(country_indicator_names,year_column_names)
+names(gdp)
 
 #Gather all year column names into a new column called Year and assign its values to a column called gdp
 clean_gdp <- gather(gdp,Year,gdp,-Country.Name,-Country.Code,-Indicator.Name,-Indicator.Code)
 gdp_data <- clean_gdp[,!colnames(clean_gdp) %in% c("Indicator.Name","Indicator.Code")]
+head(gdp_data)
+
 
 # Join all data
 gdp_cpi = merge(gdp_data, cpi_data, by=c("Country.Code","Year"), all = T) # NA's match
@@ -131,8 +152,9 @@ rm(list = ls()[grep("labor", ls(), invert = T)])
 attach(labor_data)
 ```
 
+## Exploratory Analysis
 
-### How many unique observations to you have?
+How many unique observations to you have?
 
 The number of unique observations for CPI, GDP and unemployment respectively are:
 
@@ -142,14 +164,15 @@ nrow(labor_data[!is.na(gdp),])
 nrow(labor_data[!is.na(unemp),])
 ```
 
-### What information/features/characteristics do you have for each observation?
+
+What information/features/characteristics do you have for each observation?
 
 ```{r}
 # TODO
 ```
 
 
-### What are the min/max/mean/median/sd values for each of these features?
+What are the min/max/mean/median/sd values for each of these features?
 
 ```{r summary_stats_cpi}
 summary(labor_data$CPI,na.rm = TRUE)
@@ -162,7 +185,7 @@ summary(labor_data$unemp,na.rm = TRUE)
 sd(labor_data$unemp, na.rm = TRUE)
 ```
 
-### What is the distribution of the core features (show a histogram)?
+What is the distribution of the core features (show a histogram)?
 
 ```{r hist_cpi}
 ggplot(labor_data, aes(x = CPI)) +
@@ -173,17 +196,15 @@ ggplot(labor_data, aes(x = CPI)) +
 ggplot(labor_data, aes(x = gdp)) +
   geom_histogram(fill = "white",
                  color = "black") 
-
 ggplot(labor_data, aes(x = unemp)) +
   geom_histogram(fill = "white",
                  color = "black",
                  binwidth = 0.5)
 ```
 # TODO write on these
-
 CPI seems to be right skewed.
 
-### Are there obvious trends in the data (over time, across subgroups, etc.), and are the differences statistically significant?
+Are there obvious trends in the data (over time, across subgroups, etc.), and are the differences statistically significant?
 
 ```{r plot_trends}
 
@@ -203,23 +224,84 @@ cpi_data_2 <- labor_data %>%
   group_by(Year)
 
 ggplot(cpi_data_2,aes(x = Year, y = CPI, col = Country.Code, group = Country.Code)) +geom_line(na.rm = T)
+```
+There is a steep CPI increase for India and the CPI of USA and Canada are comparitively more stable post the 2008 recession.
 
 
+What are the other salient aspects of the data (e.g. geospatial factors, text content, etc.)
+
+
+
+2. Unemployment
+
+How many unique observations to you have?
+
+```{r load_unemployment}
+unemployment <- read.csv("Unemployment_ILO.csv", check.names = FALSE)
+dim(unemployment)
+```
+There 264 unique observations in this dataset.
+
+What information/features/characteristics do you have for each observation?
+
+```{r explore_unemployment}
+head(unemployment)
+```
+
+```{r clean_unemployment}
+library(tidyr)
+#Get country and indicator column names and remove spaces using make.names
+country_indicator_names_1 <- make.names(names(unemployment[c(1:4)])) 
+#country_indicator_names
+
+#Get year column names
+year_column_names_1 <- names(unemployment[c(5:ncol(unemployment))])
+#year_column_names
+
+#Reassign the modified column names to actual column names
+names(unemployment) <- c(country_indicator_names_1,year_column_names_1)
+names(unemployment)
+```
+
+```{r gather_unemployment}
+clean_unemployment <- gather(unemployment, Year, Unemployment.Rate, -Country.Name, -Country.Code, -Indicator.Name, -Indicator.Code)
+head(clean_unemployment)
+```
+
+```{r check_for_redundancy}
+unique(clean_unemployment$Indicator.Code)
+unique(clean_unemployment$Indicator.Code)
+```
+
+
+```{r remove_redundant_columns}
+unemployment_data <- clean_unemployment[,!colnames(clean_unemployment) %in% c("Indicator.Name","Indicator.Code")]
+head(unemployment_data)
+```
+
+What are the min/max/mean/median/sd values for each of these features?
+```{r summary_stats_unemployment}
+summary(unemployment_data$Unemployment.Rate,na.rm = TRUE)
+sd(unemployment_data$Unemployment.Rate, na.rm = TRUE)
+```
+
+What is the distribution of the core features (show a histogram)?
+```{r hist_unemployment}
+hist(unemployment_data$Unemployment.Rate, xlab = "Unemployment Rate", main = "Histogram of Unemployment Rates")
+```
+Are there obvious trends in the data (over time, across subgroups, etc.), and are the differences statistically significant?
+
+```{r}
 unemployment_data_1 <- labor_data %>%
   select(Country.Name,Country.Code,Year,unemp) %>%
   filter(Year >= 2000 & Year<= 2015 & (Country.Code =='IND' | Country.Code == 'CAN' | Country.Code == 'USA'|Country.Code == 'CHN')) %>%
   group_by(Year)
-
 ggplot(unemployment_data_1, aes(x = Year, y = unemp,col = Country.Code, group = Country.Code))+geom_line(na.rm = T)
 ```
 
 We see that the unemployment rates increases drastically in Canada and USA after 2007 crisis(2008 recession). 
 The unemployment rates in China is stable wheras for India it decreases after the 2007 crisis.This can be due to increase in outsourcing.
 
+What are the other salient aspects of the data (e.g. geospatial factors, text content, etc.)
+The country names
 
-### There is a steep CPI increase for India and the CPI of USA and Canada are comparitively more stable post the 2008 recession.
-
-
-### What are the other salient aspects of the data (e.g. geospatial factors, text content, etc.)
-
-We have data bound to the country code and we can explore gradient plots to visualize the changes in features over a period of time. Other than that the data doesn't have any special features.
