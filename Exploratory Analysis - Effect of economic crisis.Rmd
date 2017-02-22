@@ -181,7 +181,8 @@ ggplot(labor_data, aes(x = unemp)) +
                  color = "black",
                  binwidth = 0.5)
 ```
-TODO write on these
+# TODO write on these
+
 CPI seems to be right skewed.
 
 ### Are there obvious trends in the data (over time, across subgroups, etc.), and are the differences statistically significant?
