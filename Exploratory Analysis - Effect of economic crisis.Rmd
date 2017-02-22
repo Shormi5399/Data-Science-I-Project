@@ -195,9 +195,7 @@ ggplot(labor_data, aes(x = CPI)) +
 
 ggplot(labor_data, aes(x = gdp)) +
   geom_histogram(fill = "white",
-                 color = "black",
-                 binwidth = 500) +
-  xlim(0, 75000)
+                 color = "black") 
 
 ggplot(labor_data, aes(x = unemp)) +
   geom_histogram(fill = "white",
