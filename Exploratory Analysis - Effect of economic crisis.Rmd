@@ -16,15 +16,6 @@ library(tidyr)
 library(dplyr)
 ```
 
-Conduct a first-pass descriptive analysis of your dataset. Produce tables and graphs that show exactly what data you have, and that contain summary statistics about the data. Questions to answer for each data source include:
-How many unique observations to you have?
-What information/features/characteristics do you have for each observation?
-What are the min/max/mean/median/sd values for each of these features?
-What is the distribution of the core features (show a histogram)?
-Are there obvious trends in the data (over time, across subgroups, etc.), and are the differences statistically significant?
-What are the other salient aspects of the data (e.g. geospatial factors, text content, etc.)
-Provide a bullet-list of the next 5-10 tasks you will perform in analyzing your dataset
-
 Cleaning up the data!
 
 ```{r load_cpi}
@@ -176,44 +167,50 @@ nrow(labor_data[!is.na(unemp),])
 
 
 What information/features/characteristics do you have for each observation?
-```{r}
-labor_data_numeric <- labor_data %>% select(gdp,unemp,CPI) %>% filter(Year>=2007 & Year<=2015 & Country.Code == "IND")
-cor(labor_data_numeric, use="complete")
-```
+
+We modify the scope of our dataset from 1991 to 2014, since unemployment data is only available for this range.
 
 ```{r}
-labor_data_numeric <- labor_data %>% select(gdp,unemp,CPI) %>% filter(Year>=2007 & Year<=2015 & Country.Code == "USA")
-cor(labor_data_numeric, use="complete")
+labor_data <- labor_data[Year>=1991 & Year<=2014,]
+head(labor_data)
 ```
-
-```{r}
-labor_data_numeric <- labor_data %>% select(gdp,unemp,CPI) %>% filter(Year>=2007 & Year<=2015 & Country.Code == "CHN")
-cor(labor_data_numeric, use="complete")
-```
-
-```{r}
-labor_data_numeric <- labor_data %>% select(gdp,unemp,CPI) %>% filter(Year>=2007 & Year<=2015 & Country.Code == "IND")
-cor(labor_data_numeric, use="complete")
-```
-
 
 What are the min/max/mean/median/sd values for each of these features?
 
 ```{r summary_stats_cpi}
+#Summary values for CPI
 summary(labor_data$CPI,na.rm = TRUE)
 sd(labor_data$CPI, na.rm = TRUE)
+
+#Summary values for GDP
+summary(labor_data$gdp,na.rm = TRUE)
+sd(labor_data$gdp, na.rm = TRUE)
+
+#Summary values for Unemployment
+summary(labor_data$unemp,na.rm = TRUE)
+sd(labor_data$unemp, na.rm = TRUE)
 ```
 
-We found the averages for CPI, gdp and unemployment for all the countries before(2000-2007) and after(2008-2016) the crisis.
+We found the averages for CPI, gdp and unemployment for all the countries.
+Now, let's manipulate the dataset to include a column to indicate if the time period for the data is before(1991-2006) or after(2007-2014) the economic crisis.
+
 
 ```{r}
-labor_data <- labor_data %>% mutate(After_Crisis = Year >= 2007)
+labor_data <- labor_data %>% mutate(Time_Period = ifelse(Year < 2007,"Before Crisis","After Crisis"))
 head(labor_data)
 ```
 
+Converting Time_Period to a factor variable and releveling the labels.
 
 ```{r}
-ggplot(labor_data, aes(x=After_Crisis, y = unemp))+geom_boxplot(na.rm = T)
+labor_data$Time_Period <- as.character(labor_data$Time_Period)
+labor_data$Time_Period <- factor(labor_data$Time_Period, levels = c("Before Crisis", "After Crisis"))
+levels(labor_data$Time_Period)
+```
+
+
+```{r}
+ggplot(labor_data, aes(x=Time_Period, y = unemp))+geom_boxplot(na.rm = T)
 ```
 
 The boxplot confirms the finding the average unemployment is almost the same before and after crisis.
@@ -221,75 +218,83 @@ This is an interesting finding since the 2007 economic crisis led to unemploymen
 
 
 ```{r}
-ggplot(labor_data, aes(x=After_Crisis, y = CPI))+geom_boxplot(na.rm = T)
+ggplot(labor_data, aes(x=Time_Period, y = CPI))+geom_boxplot(na.rm = T)
 ```
 
 The average value of CPI has increased increased post the crisis but the variability has got much less over time.
 
 ```{r}
-labor_data_outlier <- labor_data %>% filter(CPI>600)
-labor_data_outlier
-```
-
-```{r}
-ggplot(labor_data, aes(x=After_Crisis, y = gdp))+ylim(0,100000000)+geom_boxplot(na.rm = T)
+ggplot(labor_data, aes(x=Time_Period, y = gdp))+ylim(0,100000000)+geom_boxplot(na.rm = T)
 ```
 
 The average value of gdp has decreased post the crisis but the variability has got much less over time.
 
-
 What is the distribution of the core features (show a histogram)?
 
+Below are the histograms of the distribution of the CPI, GDP and Unemployment before and after 2007 economic crisis.
+
 ```{r hist_cpi}
-ggplot(country_data, aes(x = CPI)) +
+ggplot(labor_data, aes(x = CPI)) +
   geom_histogram(fill = "white",
                  color = "black",
-                 binwidth = 5,na.rm = T)
-
-ggplot(country_data, aes(x = gdp)) +
-  geom_histogram(fill = "white",
-                 color = "black",na.rm = T)
-
-ggplot(country_data, aes(x = unemp)) +
-  geom_histogram(fill = "white",
-                 color = "black",
-                 binwidth = 0.5,na.rm = T)
+                 binwidth = 5,na.rm = T)+facet_grid(.~Time_Period)
 ```
-# TODO write on these
-CPI seems to be right skewed.
+
+
+```{r}
+
+ggplot(labor_data, aes(x = gdp)) +
+  geom_histogram(fill = "white",
+                 color = "black",na.rm = T)+facet_grid(.~Time_Period)
+
+```
+
+
+
+```{r}
+
+ggplot(labor_data, aes(x = unemp)) +
+  geom_histogram(fill = "white",
+                 color = "black",
+                 binwidth = 0.5,na.rm = T)+facet_grid(.~Time_Period)
+```
+
+The distribution of CPI was significantly different before and after crisis. The count of the number of countries with higher inflation rates increased after crisis. The distribution for GDP and unemployment are not significantly different before and after crisis. 
+
+Let's understand the effect of CPI,GDP and unemployment further by analyzing trend graph from 1991 to 2014 in USA,Canada,China and India.
 
 Are there obvious trends in the data (over time, across subgroups, etc.), and are the differences statistically significant?
 
 ```{r}
 cpi_data_1 <- labor_data %>%
-  select(Country.Name,Country.Code,Year,CPI,After_Crisis) %>%
-  filter(Year >= 2000 & Year<= 2015 & (Country.Code =='IND' | Country.Code == 'CAN'| Country.Code == 'CHN' | Country.Code == 'USA')) %>%
+  select(Country.Name,Country.Code,Year,CPI) %>%
+  filter(Year >= 1991 & Year<= 2014 & (Country.Code =='IND' | Country.Code == 'CAN'| Country.Code == 'CHN' | Country.Code == 'USA')) %>%
   group_by(Year)
 
-ggplot(cpi_data_1,aes(x = Year, y = CPI, col = Country.Code, group = Country.Code)) +geom_line(na.rm = T,lwd = 1)
-
+ggplot(cpi_data_1,aes(x = Year, y = CPI, col = Country.Code, group = Country.Code)) +geom_line(na.rm = T,lwd = 1)+ theme(axis.text.x=element_text(angle=90, hjust=1))
 ```
 There is a steep CPI increase for India and the CPI of USA and Canada are comparitively more stable post the 2008 recession.
 
 ```{r}
 unemployment_data_1 <- labor_data %>%
   select(Country.Name,Country.Code,Year,unemp) %>%
-  filter(Year >= 2000 & Year<= 2015 & (Country.Code =='IND' | Country.Code == 'CAN' | Country.Code == 'USA'|Country.Code == 'CHN')) %>%
+  filter(Year >= 1991 & Year<= 2014 & (Country.Code =='IND' | Country.Code == 'CAN' | Country.Code == 'USA'|Country.Code == 'CHN')) %>%
   group_by(Year)
 
-ggplot(unemployment_data_1, aes(x = Year, y = unemp,col = Country.Code, group = Country.Code))+geom_line(na.rm = T,lwd = 1)
+ggplot(unemployment_data_1, aes(x = Year, y = unemp,col = Country.Code, group = Country.Code))+geom_line(na.rm = T,lwd = 1)+ theme(axis.text.x=element_text(angle=90, hjust=1))
 ```
 
 We see that the unemployment rates increases drastically in Canada and USA after 2007 crisis(2008 recession). 
 The unemployment rates in China is stable wheras for India it decreases after the 2007 crisis.This can be due to 
 increase in outsourcing.
 
-
 What are the other salient aspects of the data (e.g. geospatial factors, text content, etc.)
 
 The following plots are forecasts for each of the selected country's future unemployment rates based on the 2000-2009 data.  This provides a projection of what the unemployment rates might have looked like in the absence of the financial 
+
 ```{r}
 #canada
+#install.packages(forecast)
 library(forecast)
 unemployment_can <- unemployment_data_1[unemployment_data_1$Country.Code=="CAN",]
 auto.arima(unemployment_can$unemp)
@@ -316,9 +321,11 @@ preds <-forecast.Arima(fit, h=12)
 plot.forecast(preds, xlab = "USA Unemployment forecast using 2000-2009 data")
 
 ```
+
 Given the different models auto.arima recommended above, a second attempt follows utilizing the unemployment data from 1991-2009:
+
 ```{r}
-unemployment_data_2 <- labor_data %>%
+unemployment_data_2 <- country_data %>%
   select(Country.Name,Country.Code,Year,unemp) %>%
   filter((Country.Code =='IND' | Country.Code == 'CAN' | Country.Code == 'USA'|Country.Code == 'CHN')) %>%
   group_by(Year)
@@ -348,9 +355,49 @@ preds <-forecast.Arima(fit, h=12)
 plot.forecast(preds, xlab = "USA Unemployment forecast using 2000-2009 data")
 ```
 
-What are the other salient aspects of the data (e.g. geospatial factors, text content, etc.)
+
+Attempt to find trends in the CPI data.
+This data set contains CPI for 265 countries over a period of 56 years.
+The variable CPI is time sensitive.
 
 ```{r}
-#TODO
-```
+CPI_trend<-read.csv("CPI_World_Bank.csv")
+#plot(CPI_trend$)
+colnames(CPI_trend)
+#goal here is time period on x and CPI on y.
+trends<-read.csv("Timeseries.csv")
+class(trends)
+#summary(lm(Time ~ CPI_USA, data=trends))
+#plot(trends)
+#abline(lsfit(x=trends$Time,y=trends$CPI_USA),col="red")
+#install.packages('tseries') 
+require(tseries) 
+#install.packages('xts')
+require(xts)
+#converting data into time series data
+trends.ts<-ts(as.vector(trends), start = c(1960,1), end = c(2015),frequency = 1)
+trends.ts
+class(trends.ts)
+plot(trends.ts)
+#Dickey-fuller test to see if the time series is stationary.
+adf.test(trends.ts)
+#Checking for p and q values through auto correlation function and partial auto correlation function.
+acf(trends.ts)
+pacf(trends.ts)
+#this is an AR model
+#install.packages('forecast')
+library('forecast')
+auto.arima(trends.ts)
+trends.arimausa<- arima(trends.ts, order=c(1,2,1))
+trends.arimausa
+trend.preds<-forecast.Arima(trends.arimausa,h=12)
+plot.forecast(trend.preds)
+summary(trend.preds)
 
+#Hypothesis testing for USA CPI data
+#install.packages('lmtest')
+library('lmtest')
+coeftest(trends.arimausa)
+#z value is 2.2014, p=0.02771
+#another way to obtain p value to verify
+(1-pnorm(abs(trends.arimausa$coef)/sqrt(diag(trends.arimausa$var.coef))))*2
