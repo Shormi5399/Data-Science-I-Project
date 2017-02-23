@@ -5,6 +5,10 @@ date: "February 21, 2017"
 output: html_document
 ---
 
+The financial crisis in 2007-2009 occurred as a result of risky financial dealings in the real estate market which spilled over into the world economy at large. The resulting economic downturn in the USA, particularly focusing on the economic changes before and after the collapse of Lehman Brothers in September-October 2008, provides an opportunity to compare impact  of the crisis on national ecnomonies. Canada, China, India, and the USA experienced different economic changes during this period, including dramatic changes in unemployment rates.
+
+This study explores what key economic indicators (GDP, CPI, and Unemployment rate) might have looked like in each of these countries if there had been no economic crisis in 2007-2009.  Arima forecasts are utilized to project how ecnomic trends may have continued if the crisis had not occurred.  The forecast models for the 'healthy' economic state will be compared to what  actually occured in these econmies, providing a measure of the relative economic advantages and disadvantages each country experienced during this period.
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(ggplot2)
@@ -153,11 +157,8 @@ country_codes = read.csv("country-codes.csv")
 
 country_data = labor_data[labor_data$Country.Code %in% country_codes$ISO3166.1.Alpha.3,]
 
-<<<<<<< HEAD
 labor_data <- country_data 
 
-=======
->>>>>>> origin/master
 attach(labor_data)
 ```
 
@@ -176,8 +177,23 @@ nrow(labor_data[!is.na(unemp),])
 
 What information/features/characteristics do you have for each observation?
 ```{r}
-#TODO
-unique(labor_data$Country.Code)
+labor_data_numeric <- labor_data %>% select(gdp,unemp,CPI) %>% filter(Year>=2007 & Year<=2015 & Country.Code == "IND")
+cor(labor_data_numeric, use="complete")
+```
+
+```{r}
+labor_data_numeric <- labor_data %>% select(gdp,unemp,CPI) %>% filter(Year>=2007 & Year<=2015 & Country.Code == "USA")
+cor(labor_data_numeric, use="complete")
+```
+
+```{r}
+labor_data_numeric <- labor_data %>% select(gdp,unemp,CPI) %>% filter(Year>=2007 & Year<=2015 & Country.Code == "CHN")
+cor(labor_data_numeric, use="complete")
+```
+
+```{r}
+labor_data_numeric <- labor_data %>% select(gdp,unemp,CPI) %>% filter(Year>=2007 & Year<=2015 & Country.Code == "IND")
+cor(labor_data_numeric, use="complete")
 ```
 
 
@@ -189,7 +205,6 @@ sd(labor_data$CPI, na.rm = TRUE)
 ```
 
 We found the averages for CPI, gdp and unemployment for all the countries before(2000-2007) and after(2008-2016) the crisis.
-
 
 ```{r}
 labor_data <- labor_data %>% mutate(After_Crisis = Year >= 2007)
@@ -212,6 +227,11 @@ ggplot(labor_data, aes(x=After_Crisis, y = CPI))+geom_boxplot(na.rm = T)
 The average value of CPI has increased increased post the crisis but the variability has got much less over time.
 
 ```{r}
+labor_data_outlier <- labor_data %>% filter(CPI>600)
+labor_data_outlier
+```
+
+```{r}
 ggplot(labor_data, aes(x=After_Crisis, y = gdp))+ylim(0,100000000)+geom_boxplot(na.rm = T)
 ```
 
@@ -228,12 +248,7 @@ ggplot(country_data, aes(x = CPI)) +
 
 ggplot(country_data, aes(x = gdp)) +
   geom_histogram(fill = "white",
-<<<<<<< HEAD
                  color = "black",na.rm = T)
-=======
-                 color = "black",
-)
->>>>>>> origin/master
 
 ggplot(country_data, aes(x = unemp)) +
   geom_histogram(fill = "white",
@@ -245,17 +260,16 @@ CPI seems to be right skewed.
 
 Are there obvious trends in the data (over time, across subgroups, etc.), and are the differences statistically significant?
 
-
 ```{r}
-cpi_data_2 <- labor_data %>%
+cpi_data_1 <- labor_data %>%
   select(Country.Name,Country.Code,Year,CPI,After_Crisis) %>%
   filter(Year >= 2000 & Year<= 2015 & (Country.Code =='IND' | Country.Code == 'CAN'| Country.Code == 'CHN' | Country.Code == 'USA')) %>%
   group_by(Year)
 
-ggplot(cpi_data_2,aes(x = Year, y = CPI, col = Country.Code, group = Country.Code)) +geom_line(na.rm = T)
+ggplot(cpi_data_1,aes(x = Year, y = CPI, col = Country.Code, group = Country.Code)) +geom_line(na.rm = T,lwd = 1)
+
 ```
 There is a steep CPI increase for India and the CPI of USA and Canada are comparitively more stable post the 2008 recession.
-
 
 ```{r}
 unemployment_data_1 <- labor_data %>%
@@ -263,7 +277,7 @@ unemployment_data_1 <- labor_data %>%
   filter(Year >= 2000 & Year<= 2015 & (Country.Code =='IND' | Country.Code == 'CAN' | Country.Code == 'USA'|Country.Code == 'CHN')) %>%
   group_by(Year)
 
-ggplot(unemployment_data_1, aes(x = Year, y = unemp,col = Country.Code, group = Country.Code))+geom_line(na.rm = T)
+ggplot(unemployment_data_1, aes(x = Year, y = unemp,col = Country.Code, group = Country.Code))+geom_line(na.rm = T,lwd = 1)
 ```
 
 We see that the unemployment rates increases drastically in Canada and USA after 2007 crisis(2008 recession). 
@@ -272,4 +286,71 @@ increase in outsourcing.
 
 
 What are the other salient aspects of the data (e.g. geospatial factors, text content, etc.)
+
+The following plots are forecasts for each of the selected country's future unemployment rates based on the 2000-2009 data.  This provides a projection of what the unemployment rates might have looked like in the absence of the financial 
+```{r}
+#canada
+library(forecast)
+unemployment_can <- unemployment_data_1[unemployment_data_1$Country.Code=="CAN",]
+auto.arima(unemployment_can$unemp)
+fit <-arima(x=unemployment_can$unemp[1:9], order=c(0,0,1))
+preds <-forecast.Arima(fit, h=12)
+plot.forecast(preds, xlab = "Canada Unemployment forecast using 2000-2009 data")
+#us
+unemployment_us <- unemployment_data_1[unemployment_data_1$Country.Code=="USA",]
+auto.arima(unemployment_us$unemp)
+fit <-arima(x=unemployment_us$unemp[1:9], order=c(0,1,0))
+preds <-forecast.Arima(fit, h=12)
+plot.forecast(preds, xlab = "USA Unemployment forecast using 2000-2009 data")
+#India
+unemployment_ind <- unemployment_data_1[unemployment_data_1$Country.Code=="IND",]
+auto.arima(unemployment_ind$unemp)
+fit <-arima(x=unemployment_ind$unemp[1:9], order=c(0,1,0))
+preds <-forecast.Arima(fit, h=12)
+plot.forecast(preds, xlab = "India Unemployment forecast using 2000-2009 data")
+#china
+unemployment_china <- unemployment_data_1[unemployment_data_1$Country.Code=="CHN",]
+auto.arima(unemployment_china$unemp)
+fit <-arima(x=unemployment_china$unemp[1:9], order=c(1,0,0))
+preds <-forecast.Arima(fit, h=12)
+plot.forecast(preds, xlab = "USA Unemployment forecast using 2000-2009 data")
+
+```
+Given the different models auto.arima recommended above, a second attempt follows utilizing the unemployment data from 1991-2009:
+```{r}
+unemployment_data_2 <- labor_data %>%
+  select(Country.Name,Country.Code,Year,unemp) %>%
+  filter((Country.Code =='IND' | Country.Code == 'CAN' | Country.Code == 'USA'|Country.Code == 'CHN')) %>%
+  group_by(Year)
+#canada
+unemployment_can <- unemployment_data_2[unemployment_data_2$Country.Code=="CAN",]
+auto.arima(unemployment_can$unemp[32:50])
+fit <-arima(x=unemployment_can$unemp[32:50], order=c(0,1,1))
+preds <-forecast.Arima(fit, h=12)
+plot.forecast(preds, xlab = "Canada Unemployment forecast using 1991-2009 data")
+#us
+unemployment_us <- unemployment_data_2[unemployment_data_2$Country.Code=="USA",]
+auto.arima(unemployment_us$unemp[32:50])
+fit <-arima(x=unemployment_us$unemp[32:50], order=c(2,0,1))
+preds <-forecast.Arima(fit, h=12)
+plot.forecast(preds, xlab = "USA Unemployment forecast using 1991-2009 data")
+#India
+unemployment_ind <- unemployment_data_2[unemployment_data_2$Country.Code=="IND",]
+auto.arima(unemployment_ind$unemp[32:50])
+fit <-arima(x=unemployment_ind$unemp[32:50], order=c(0,0,0))
+preds <-forecast.Arima(fit, h=12)
+plot.forecast(preds, xlab = "India Unemployment forecast using 1991-2009 data")
+#china
+unemployment_china <- unemployment_data_2[unemployment_data_2$Country.Code=="CHN",]
+auto.arima(unemployment_china$unemp[32:50])
+fit <-arima(x=unemployment_china$unemp[32:50], order=c(1,0,0))
+preds <-forecast.Arima(fit, h=12)
+plot.forecast(preds, xlab = "USA Unemployment forecast using 2000-2009 data")
+```
+
+What are the other salient aspects of the data (e.g. geospatial factors, text content, etc.)
+
+```{r}
+#TODO
+```
 
