@@ -153,8 +153,11 @@ country_codes = read.csv("country-codes.csv")
 
 country_data = labor_data[labor_data$Country.Code %in% country_codes$ISO3166.1.Alpha.3,]
 
+<<<<<<< HEAD
 labor_data <- country_data 
 
+=======
+>>>>>>> origin/master
 attach(labor_data)
 ```
 
@@ -225,7 +228,12 @@ ggplot(country_data, aes(x = CPI)) +
 
 ggplot(country_data, aes(x = gdp)) +
   geom_histogram(fill = "white",
+<<<<<<< HEAD
                  color = "black",na.rm = T)
+=======
+                 color = "black",
+)
+>>>>>>> origin/master
 
 ggplot(country_data, aes(x = unemp)) +
   geom_histogram(fill = "white",
