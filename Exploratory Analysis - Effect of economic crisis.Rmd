@@ -149,6 +149,12 @@ labor_data = labor_data[!(is.na(labor_data$unemp) & is.na(labor_data$CPI) & is.n
 # Clean up the working space
 rm(list = ls()[grep("labor", ls(), invert = T)])
 
+country_codes = read.csv("country-codes.csv")
+
+country_data = labor_data[labor_data$Country.Code %in% country_codes$ISO3166.1.Alpha.3,]
+
+labor_data <- country_data 
+
 attach(labor_data)
 ```
 
@@ -166,9 +172,9 @@ nrow(labor_data[!is.na(unemp),])
 
 
 What information/features/characteristics do you have for each observation?
-
 ```{r}
-# TODO
+#TODO
+unique(labor_data$Country.Code)
 ```
 
 
@@ -177,49 +183,64 @@ What are the min/max/mean/median/sd values for each of these features?
 ```{r summary_stats_cpi}
 summary(labor_data$CPI,na.rm = TRUE)
 sd(labor_data$CPI, na.rm = TRUE)
-
-summary(labor_data$gdp,na.rm = TRUE)
-sd(labor_data$gdp, na.rm = TRUE)
-
-summary(labor_data$unemp,na.rm = TRUE)
-sd(labor_data$unemp, na.rm = TRUE)
 ```
+
+We found the averages for CPI, gdp and unemployment for all the countries before(2000-2007) and after(2008-2016) the crisis.
+
+
+```{r}
+labor_data <- labor_data %>% mutate(After_Crisis = Year >= 2007)
+head(labor_data)
+```
+
+
+```{r}
+ggplot(labor_data, aes(x=After_Crisis, y = unemp))+geom_boxplot(na.rm = T)
+```
+
+The boxplot confirms the finding the average unemployment is almost the same before and after crisis.
+This is an interesting finding since the 2007 economic crisis led to unemployment. We will try to analyze how the unemployment trends varied post recession by drilling down further.
+
+
+```{r}
+ggplot(labor_data, aes(x=After_Crisis, y = CPI))+geom_boxplot(na.rm = T)
+```
+
+The average value of CPI has increased increased post the crisis but the variability has got much less over time.
+
+```{r}
+ggplot(labor_data, aes(x=After_Crisis, y = gdp))+ylim(0,100000000)+geom_boxplot(na.rm = T)
+```
+
+The average value of gdp has decreased post the crisis but the variability has got much less over time.
+
 
 What is the distribution of the core features (show a histogram)?
 
 ```{r hist_cpi}
-ggplot(labor_data, aes(x = CPI)) +
+ggplot(country_data, aes(x = CPI)) +
   geom_histogram(fill = "white",
                  color = "black",
-                 binwidth = 5)
+                 binwidth = 5,na.rm = T)
 
-ggplot(labor_data, aes(x = gdp)) +
+ggplot(country_data, aes(x = gdp)) +
   geom_histogram(fill = "white",
-                 color = "black") 
-ggplot(labor_data, aes(x = unemp)) +
+                 color = "black",na.rm = T)
+
+ggplot(country_data, aes(x = unemp)) +
   geom_histogram(fill = "white",
                  color = "black",
-                 binwidth = 0.5)
+                 binwidth = 0.5,na.rm = T)
 ```
 # TODO write on these
 CPI seems to be right skewed.
 
 Are there obvious trends in the data (over time, across subgroups, etc.), and are the differences statistically significant?
 
-```{r plot_trends}
-
-cpi_data_1 <- labor_data %>%
-  select(Country.Name,Country.Code,Year,CPI) %>%
-  filter(Year >= 2000 & Year<= 2015 & Country.Code == "USA") %>%
-  group_by(Year)
-
-ggplot(cpi_data_1,aes(x = Year, y = CPI))+geom_point(na.rm = TRUE) 
-```
-
 
 ```{r}
 cpi_data_2 <- labor_data %>%
-  select(Country.Name,Country.Code,Year,CPI) %>%
+  select(Country.Name,Country.Code,Year,CPI,After_Crisis) %>%
   filter(Year >= 2000 & Year<= 2015 & (Country.Code =='IND' | Country.Code == 'CAN'| Country.Code == 'CHN' | Country.Code == 'USA')) %>%
   group_by(Year)
 
@@ -228,80 +249,19 @@ ggplot(cpi_data_2,aes(x = Year, y = CPI, col = Country.Code, group = Country.Cod
 There is a steep CPI increase for India and the CPI of USA and Canada are comparitively more stable post the 2008 recession.
 
 
-What are the other salient aspects of the data (e.g. geospatial factors, text content, etc.)
-
-
-
-2. Unemployment
-
-How many unique observations to you have?
-
-```{r load_unemployment}
-unemployment <- read.csv("Unemployment_ILO.csv", check.names = FALSE)
-dim(unemployment)
-```
-There 264 unique observations in this dataset.
-
-What information/features/characteristics do you have for each observation?
-
-```{r explore_unemployment}
-head(unemployment)
-```
-
-```{r clean_unemployment}
-library(tidyr)
-#Get country and indicator column names and remove spaces using make.names
-country_indicator_names_1 <- make.names(names(unemployment[c(1:4)])) 
-#country_indicator_names
-
-#Get year column names
-year_column_names_1 <- names(unemployment[c(5:ncol(unemployment))])
-#year_column_names
-
-#Reassign the modified column names to actual column names
-names(unemployment) <- c(country_indicator_names_1,year_column_names_1)
-names(unemployment)
-```
-
-```{r gather_unemployment}
-clean_unemployment <- gather(unemployment, Year, Unemployment.Rate, -Country.Name, -Country.Code, -Indicator.Name, -Indicator.Code)
-head(clean_unemployment)
-```
-
-```{r check_for_redundancy}
-unique(clean_unemployment$Indicator.Code)
-unique(clean_unemployment$Indicator.Code)
-```
-
-
-```{r remove_redundant_columns}
-unemployment_data <- clean_unemployment[,!colnames(clean_unemployment) %in% c("Indicator.Name","Indicator.Code")]
-head(unemployment_data)
-```
-
-What are the min/max/mean/median/sd values for each of these features?
-```{r summary_stats_unemployment}
-summary(unemployment_data$Unemployment.Rate,na.rm = TRUE)
-sd(unemployment_data$Unemployment.Rate, na.rm = TRUE)
-```
-
-What is the distribution of the core features (show a histogram)?
-```{r hist_unemployment}
-hist(unemployment_data$Unemployment.Rate, xlab = "Unemployment Rate", main = "Histogram of Unemployment Rates")
-```
-Are there obvious trends in the data (over time, across subgroups, etc.), and are the differences statistically significant?
-
 ```{r}
 unemployment_data_1 <- labor_data %>%
   select(Country.Name,Country.Code,Year,unemp) %>%
   filter(Year >= 2000 & Year<= 2015 & (Country.Code =='IND' | Country.Code == 'CAN' | Country.Code == 'USA'|Country.Code == 'CHN')) %>%
   group_by(Year)
+
 ggplot(unemployment_data_1, aes(x = Year, y = unemp,col = Country.Code, group = Country.Code))+geom_line(na.rm = T)
 ```
 
 We see that the unemployment rates increases drastically in Canada and USA after 2007 crisis(2008 recession). 
-The unemployment rates in China is stable wheras for India it decreases after the 2007 crisis.This can be due to increase in outsourcing.
+The unemployment rates in China is stable wheras for India it decreases after the 2007 crisis.This can be due to 
+increase in outsourcing.
+
 
 What are the other salient aspects of the data (e.g. geospatial factors, text content, etc.)
-The country names
 
