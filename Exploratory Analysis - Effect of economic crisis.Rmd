@@ -5,6 +5,8 @@ date: "February 21, 2017"
 output: html_document
 ---
 
+Github link: https://github.com/snehavcs/Data-Science-I-Project
+
 The financial crisis in 2007-2009 occurred as a result of risky financial dealings in the real estate market which spilled over into the world economy at large. The resulting economic downturn in the USA, particularly focusing on the economic changes before and after the collapse of Lehman Brothers in September-October 2008, provides an opportunity to compare impact  of the crisis on national ecnomonies. Canada, China, India, and the USA experienced different economic changes during this period, including dramatic changes in unemployment rates.
 
 This study explores what key economic indicators (GDP, CPI, and Unemployment rate) might have looked like in each of these countries if there had been no economic crisis in 2007-2009.  Arima forecasts are utilized to project how ecnomic trends may have continued if the crisis had not occurred.  The forecast models for the 'healthy' economic state will be compared to what  actually occured in these econmies, providing a measure of the relative economic advantages and disadvantages each country experienced during this period.
@@ -250,7 +252,6 @@ ggplot(labor_data, aes(x = gdp)) +
 ```
 
 
-
 ```{r}
 
 ggplot(labor_data, aes(x = unemp)) +
@@ -290,7 +291,7 @@ increase in outsourcing.
 
 What are the other salient aspects of the data (e.g. geospatial factors, text content, etc.)
 
-The following plots are forecasts for each of the selected country's future unemployment rates based on the 2000-2009 data.  This provides a projection of what the unemployment rates might have looked like in the absence of the financial 
+The following plots are forecasts for each of the selected country's future unemployment rates based on the 2000-2009 data.  This provides a projection of what the unemployment rates might have looked like in the absence of the financial crisis.
 
 ```{r}
 #canada
@@ -359,6 +360,7 @@ plot.forecast(preds, xlab = "USA Unemployment forecast using 2000-2009 data")
 Attempt to find trends in the CPI data.
 This data set contains CPI for 265 countries over a period of 56 years.
 The variable CPI is time sensitive.
+We have used Dickey-fuller test to see if the time series is stationary and checked for p and q values through auto correlation function and partial auto correlation function.
 
 ```{r}
 CPI_trend<-read.csv("CPI_World_Bank.csv")
@@ -401,3 +403,14 @@ coeftest(trends.arimausa)
 #z value is 2.2014, p=0.02771
 #another way to obtain p value to verify
 (1-pnorm(abs(trends.arimausa$coef)/sqrt(diag(trends.arimausa$var.coef))))*2
+```
+
+p value obtained from this analysis is 0.027. Since CPI was an AR series, we will analyze this further on the statistical significance and its effect on the hypothesis.
+
+Provide a bullet-list of the next 5-10 tasks you will perform in analyzing your dataset
+
+1. Compare the time series prediction with the actual data and see how well did the prediction work by checking statistical significance.
+2. Improve the time series analysis across all the predictors and see how to convert our dataframe into timeseries for easier analysis.
+3. Add more predictors to the dataset and analyze correlation. For example, we could add mental health to see the effects of the crisis on these predictors. We need to check feasibility of obtaining and merging such data into our analysis.
+4. Quantify the propagation of the shock to the predictors due to the 2007 crisis using autocorrelation or other techniques.
+5. Visualize the change in predictors on a map using geospatial plotting tools.
