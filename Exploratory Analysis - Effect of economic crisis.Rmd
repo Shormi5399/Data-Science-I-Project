@@ -291,71 +291,75 @@ increase in outsourcing.
 
 What are the other salient aspects of the data (e.g. geospatial factors, text content, etc.)
 
-The following plots are forecasts for each of the selected country's future unemployment rates based on the 2000-2009 data.  This provides a projection of what the unemployment rates might have looked like in the absence of the financial crisis.
+The following plots are forecasts for each of the selected country's future unemployment rates based on the 1991-2014 data.  This also provides a projection of what the unemployment rates might have looked like in the absence of the data post the financial crisis
 
 ```{r}
-#canada
-#install.packages(forecast)
-library(forecast)
-unemployment_can <- unemployment_data_1[unemployment_data_1$Country.Code=="CAN",]
-auto.arima(unemployment_can$unemp)
-fit <-arima(x=unemployment_can$unemp[1:9], order=c(0,0,1))
-preds <-forecast.Arima(fit, h=12)
-plot.forecast(preds, xlab = "Canada Unemployment forecast using 2000-2009 data")
-#us
-unemployment_us <- unemployment_data_1[unemployment_data_1$Country.Code=="USA",]
-auto.arima(unemployment_us$unemp)
-fit <-arima(x=unemployment_us$unemp[1:9], order=c(0,1,0))
-preds <-forecast.Arima(fit, h=12)
-plot.forecast(preds, xlab = "USA Unemployment forecast using 2000-2009 data")
-#India
-unemployment_ind <- unemployment_data_1[unemployment_data_1$Country.Code=="IND",]
-auto.arima(unemployment_ind$unemp)
-fit <-arima(x=unemployment_ind$unemp[1:9], order=c(0,1,0))
-preds <-forecast.Arima(fit, h=12)
-plot.forecast(preds, xlab = "India Unemployment forecast using 2000-2009 data")
-#china
-unemployment_china <- unemployment_data_1[unemployment_data_1$Country.Code=="CHN",]
-auto.arima(unemployment_china$unemp)
-fit <-arima(x=unemployment_china$unemp[1:9], order=c(1,0,0))
-preds <-forecast.Arima(fit, h=12)
-plot.forecast(preds, xlab = "USA Unemployment forecast using 2000-2009 data")
+trends.usa <- na.trim(labor_data) %>% select(Year,unemp,Country.Code) %>% filter(Country.Code == "USA")  
+trendsts.usa <- ts(as.vector(trends.usa$unemp),start = c(1991,1), end = c(2014), frequency = 1)
 
+trends.usabc <- na.trim(labor_data) %>% select(Year,unemp,Country.Code) %>% filter(Country.Code == "USA" & Year >=1991 & Year<=2007)
+trendsts.usabc <- ts(as.vector(trends.usabc$unemp),start = c(1991,1), end = c(2007), frequency = 1)
+
+auto.arima(trendsts.usa)
+trends.arimausa<- arima(trendsts.usa, order=c(1,2,1))
+trends.arimausa
+trend.preds<-forecast.Arima(trends.arimausa,h=12)
+plot.forecast(trend.preds, ylim = c(0,10), xlim = c(2000,2009))
+summary(trend.preds)
+
+
+auto.arima(trendsts.usabc)
+trends.arimausa<- arima(trendsts.usabc, order=c(1,2,1))
+trends.arimausa
+trend.preds<-forecast.Arima(trends.arimausa,h=12)
+plot.forecast(trend.preds, ylim = c(0,10), xlim = c(2000,2009))
+summary(trend.preds)
 ```
-
-Given the different models auto.arima recommended above, a second attempt follows utilizing the unemployment data from 1991-2009:
 
 ```{r}
-unemployment_data_2 <- country_data %>%
-  select(Country.Name,Country.Code,Year,unemp) %>%
-  filter((Country.Code =='IND' | Country.Code == 'CAN' | Country.Code == 'USA'|Country.Code == 'CHN')) %>%
-  group_by(Year)
-#canada
-unemployment_can <- unemployment_data_2[unemployment_data_2$Country.Code=="CAN",]
-auto.arima(unemployment_can$unemp[32:50])
-fit <-arima(x=unemployment_can$unemp[32:50], order=c(0,1,1))
-preds <-forecast.Arima(fit, h=12)
-plot.forecast(preds, xlab = "Canada Unemployment forecast using 1991-2009 data")
-#us
-unemployment_us <- unemployment_data_2[unemployment_data_2$Country.Code=="USA",]
-auto.arima(unemployment_us$unemp[32:50])
-fit <-arima(x=unemployment_us$unemp[32:50], order=c(2,0,1))
-preds <-forecast.Arima(fit, h=12)
-plot.forecast(preds, xlab = "USA Unemployment forecast using 1991-2009 data")
-#India
-unemployment_ind <- unemployment_data_2[unemployment_data_2$Country.Code=="IND",]
-auto.arima(unemployment_ind$unemp[32:50])
-fit <-arima(x=unemployment_ind$unemp[32:50], order=c(0,0,0))
-preds <-forecast.Arima(fit, h=12)
-plot.forecast(preds, xlab = "India Unemployment forecast using 1991-2009 data")
-#china
-unemployment_china <- unemployment_data_2[unemployment_data_2$Country.Code=="CHN",]
-auto.arima(unemployment_china$unemp[32:50])
-fit <-arima(x=unemployment_china$unemp[32:50], order=c(1,0,0))
-preds <-forecast.Arima(fit, h=12)
-plot.forecast(preds, xlab = "USA Unemployment forecast using 2000-2009 data")
+trends.ind <- labor_data %>% select(Year,unemp,Country.Code) %>% filter(Country.Code == "IND")
+trendsts.ind <- ts(as.vector(trends.ind$unemp),start = c(1991,1), end = c(2014), frequency = 1)
+
+trends.indbc <- labor_data %>% select(Year,unemp,Country.Code) %>% filter(Country.Code == "IND" & Year >=1991 & Year<=2007)
+trendsts.indbc <- ts(as.vector(trends.indbc$unemp),start = c(1991,1), end = c(2007), frequency = 1)
+
+auto.arima(trendsts.ind)
+trends.arimaind<- arima(trendsts.ind, order=c(1,2,1))
+trends.arimaind
+trend.preds<-forecast.Arima(trends.arimaind,h=12)
+plot.forecast(trend.preds,xlim = c(2000,2009),ylim = c(3,5))
+summary(trend.preds)
+
+auto.arima(trendsts.indbc)
+trends.arimaind<- arima(trendsts.indbc, order=c(1,2,1))
+trends.arimaind
+trend.preds<-forecast.Arima(trends.arimaind,h=12)
+plot.forecast(trend.preds,xlim = c(2000,2009),ylim = c(3,5))
+summary(trend.preds)
 ```
 
+
+```{r}
+trends.usa <- labor_data %>% select(Year,CPI,Country.Code) %>% filter(Country.Code == "USA")
+trendsts.usa <- ts(as.vector(trends.usa$CPI),start = c(1991,1), end = c(2014), frequency = 1)
+
+trends.usabc <- labor_data %>% select(Year,CPI,Country.Code) %>% filter(Country.Code == "USA" & Year >=1991 & Year<=2007)
+trendsts.usabc <- ts(as.vector(trends.usabc$CPI),start = c(1991,1), end = c(2007), frequency = 1)
+
+auto.arima(trendsts.usa)
+trends.arimausa<- arima(trendsts.usa, order=c(1,2,1))
+trends.arimausa
+trend.preds<-forecast.Arima(trends.arimausa,h=12)
+plot.forecast(trend.preds,xlim = c(1991,2020),ylim = c(50,150))
+summary(trend.preds)
+
+auto.arima(trendsts.usabc)
+trends.arimausa<- arima(trendsts.usabc, order=c(1,2,1))
+trends.arimausa
+trend.preds<-forecast.Arima(trends.arimausa,h=12)
+plot.forecast(trend.preds,xlim = c(1991,2020),ylim = c(50,150))
+summary(trend.preds)
+```
 
 Attempt to find trends in the CPI data.
 This data set contains CPI for 265 countries over a period of 56 years.
@@ -404,6 +408,8 @@ coeftest(trends.arimausa)
 #another way to obtain p value to verify
 (1-pnorm(abs(trends.arimausa$coef)/sqrt(diag(trends.arimausa$var.coef))))*2
 ```
+
+
 
 p value obtained from this analysis is 0.027. Since CPI was an AR series, we will analyze this further on the statistical significance and its effect on the hypothesis.
 
