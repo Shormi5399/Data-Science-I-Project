@@ -294,12 +294,13 @@ What are the other salient aspects of the data (e.g. geospatial factors, text co
 The following plots are forecasts for each of the selected country's future unemployment rates based on the 1991-2014 data.  This also provides a projection of what the unemployment rates might have looked like in the absence of the data post the financial crisis
 
 ```{r}
-trends.usa <- na.trim(labor_data) %>% select(Year,unemp,Country.Code) %>% filter(Country.Code == "USA")  
+trends.usa <-labor_data %>% select(Year,unemp,Country.Code) %>% filter(Country.Code == "USA")  
 trendsts.usa <- ts(as.vector(trends.usa$unemp),start = c(1991,1), end = c(2014), frequency = 1)
 
-trends.usabc <- na.trim(labor_data) %>% select(Year,unemp,Country.Code) %>% filter(Country.Code == "USA" & Year >=1991 & Year<=2007)
+trends.usabc <- labor_data  %>% select(Year,unemp,Country.Code) %>% filter(Country.Code == "USA" & Year >=1991 & Year<=2007)
 trendsts.usabc <- ts(as.vector(trends.usabc$unemp),start = c(1991,1), end = c(2007), frequency = 1)
-
+#install.packages("forecast")
+library(forecast)
 auto.arima(trendsts.usa)
 trends.arimausa<- arima(trendsts.usa, order=c(1,2,1))
 trends.arimausa
@@ -352,7 +353,8 @@ trends.arimausa
 trend.preds<-forecast.Arima(trends.arimausa,h=12)
 plot.forecast(trend.preds,xlim = c(1991,2020),ylim = c(50,150))
 summary(trend.preds)
-
+#install.packages('forecast')
+#library('forecast')
 auto.arima(trendsts.usabc)
 trends.arimausa<- arima(trendsts.usabc, order=c(1,2,1))
 trends.arimausa
@@ -392,7 +394,7 @@ acf(trends.ts)
 pacf(trends.ts)
 #this is an AR model
 #install.packages('forecast')
-library('forecast')
+#library('forecast')
 auto.arima(trends.ts)
 trends.arimausa<- arima(trends.ts, order=c(1,2,1))
 trends.arimausa
