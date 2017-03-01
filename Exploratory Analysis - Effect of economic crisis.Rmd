@@ -356,6 +356,54 @@ plot.forecast(trend.preds, ylim = c(0,10), xlim = c(2000,2009))
 summary(trend.preds)
 ```
 
+```{r}
+trends.usa <-labor_data %>% select(Year,Manufacturing.Rate,Country.Code) %>% filter(Country.Code == "USA")  
+trendsts.usa <- ts(as.vector(trends.usa$Manufacturing.Rate),start = c(1991,1), end = c(2014), frequency = 1)
+
+trends.usabc <- labor_data  %>% select(Year,Manufacturing.Rate,Country.Code) %>% filter(Country.Code == "USA" & Year >=1991 & Year<=2007)
+trendsts.usabc <- ts(as.vector(trends.usabc$Manufacturing.Rate),start = c(1991,1), end = c(2007), frequency = 1)
+#install.packages("forecast")
+library(forecast)
+auto.arima(trendsts.usa)
+trends.arimausa<- arima(trendsts.usa, order=c(1,2,1))
+trends.arimausa
+trend.preds<-forecast.Arima(trends.arimausa,h=12)
+plot.forecast(trend.preds, ylim = c(10,16), xlim = c(2000,2009))
+summary(trend.preds)
+
+
+auto.arima(trendsts.usabc)
+trends.arimausa<- arima(trendsts.usabc, order=c(1,2,1))
+trends.arimausa
+trend.preds<-forecast.Arima(trends.arimausa,h=12)
+plot.forecast(trend.preds, ylim = c(10,16), xlim = c(2000,2009))
+summary(trend.preds)
+```
+
+
+```{r}
+trends.usa <-labor_data %>% select(Year,Trade,Country.Code) %>% filter(Country.Code == "USA")  
+trendsts.usa <- ts(as.vector(trends.usa$Trade),start = c(1991,1), end = c(2014), frequency = 1)
+
+trends.usabc <- labor_data  %>% select(Year,Trade,Country.Code) %>% filter(Country.Code == "USA" & Year >=1991 & Year<=2007)
+trendsts.usabc <- ts(as.vector(trends.usabc$Trade),start = c(1991,1), end = c(2007), frequency = 1)
+#install.packages("forecast")
+library(forecast)
+auto.arima(trendsts.usa)
+trends.arimausa<- arima(trendsts.usa, order=c(1,2,1))
+trends.arimausa
+trend.preds<-forecast.Arima(trends.arimausa,h=12)
+plot.forecast(trend.preds, ylim = c(20,35), xlim = c(2000,2009))
+summary(trend.preds)
+
+
+auto.arima(trendsts.usabc)
+trends.arimausa<- arima(trendsts.usabc, order=c(1,2,1))
+trends.arimausa
+trend.preds<-forecast.Arima(trends.arimausa,h=12)
+plot.forecast(trend.preds, ylim = c(20,35), xlim = c(2000,2009))
+summary(trend.preds)
+```
 
 ```{r}
 CPI_trend<-read.csv("CPI_World_Bank.csv")
