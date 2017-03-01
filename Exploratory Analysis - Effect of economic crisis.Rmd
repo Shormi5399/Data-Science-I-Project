@@ -333,6 +333,7 @@ What are the other salient aspects of the data (e.g. geospatial factors, text co
 The following plots are forecasts for each of the selected country's future unemployment rates based on the 1991-2014 data.  This also provides a projection of what the unemployment rates might have looked like in the absence of the data post the financial crisis
 
 ```{r}
+par(mfrow=c(1,2))
 trends.usa <-labor_data %>% select(Year,Unemployment.Rate,Country.Code) %>% filter(Country.Code == "USA")  
 trendsts.usa <- ts(as.vector(trends.usa$Unemployment.Rate),start = c(1991,1), end = c(2014), frequency = 1)
 
@@ -357,6 +358,7 @@ summary(trend.preds)
 ```
 
 ```{r}
+par(mfrow=c(1,2))
 trends.usa <-labor_data %>% select(Year,Manufacturing.Rate,Country.Code) %>% filter(Country.Code == "USA")  
 trendsts.usa <- ts(as.vector(trends.usa$Manufacturing.Rate),start = c(1991,1), end = c(2014), frequency = 1)
 
@@ -382,6 +384,7 @@ summary(trend.preds)
 
 
 ```{r}
+par(mfrow=c(1,2))
 trends.usa <-labor_data %>% select(Year,Trade,Country.Code) %>% filter(Country.Code == "USA")  
 trendsts.usa <- ts(as.vector(trends.usa$Trade),start = c(1991,1), end = c(2014), frequency = 1)
 
