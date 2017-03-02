@@ -1,0 +1,47 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link href="css/d3.geomap.css" rel="stylesheet">
+    <script src="vendor/d3.geomap.dependencies.min.js"></script>
+    <script src="js/d3.geomap.js"></script>
+</head>
+
+<body>
+    <div id="year"></div>
+    <div id="map"></div>
+    <script type="text/javascript">
+    var format = function(d) {
+        return d3.format(',.02f')(d) + '%';
+    }
+
+    let year = '1991';
+
+    let map = d3.geomap.choropleth()
+        .geofile('data/countries.json')
+        .colors(colorbrewer.YlOrRd[9])
+        .column(year)
+        .format(format)
+        .legend(true)
+        .unitId('Country Code');
+
+    d3.csv('data/unemployment.csv', function(error, data) {
+        d3.select('#map')
+            .datum(data)
+            .call(map.draw, map);
+    });
+
+    function drawMap() {
+        var yearDiv = document.querySelector('#year');
+        yearDiv.innerHTML = year;
+        year++;
+        map.properties.column = year;
+        map.update();
+        if (year >= 2014) year = 1990;
+    }
+
+    var mapInterval = setInterval(drawMap, 200);
+    </script>
+</body>
+
+</html>
