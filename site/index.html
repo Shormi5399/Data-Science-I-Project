@@ -8,39 +8,19 @@
 </head>
 
 <body>
-    <div id="year"></div>
+    <div class="container">
+        <div class="buttons">
+            <button class="btn" data-action="prev">Previous Year</button>
+            <button class="btn" data-action="play-pause">Play/Pause</button>
+            <button class="btn" data-action="next">Next Year</button>
+            <button class="btn" data-action="unemployment">Unemployment</button>
+            <button class="btn" data-action="inflation">Inflation</button>
+            <button class="btn" data-action="trade">Trade</button>
+        </div>
+        <div id="year"></div>
+    </div>
     <div id="map"></div>
-    <script type="text/javascript">
-    var format = function(d) {
-        return d3.format(',.02f')(d) + '%';
-    }
-
-    let year = '1991';
-
-    let map = d3.geomap.choropleth()
-        .geofile('data/countries.json')
-        .colors(colorbrewer.YlOrRd[9])
-        .column(year)
-        .format(format)
-        .legend(true)
-        .unitId('Country Code');
-
-    d3.csv('data/unemployment.csv', function(error, data) {
-        d3.select('#map')
-            .datum(data)
-            .call(map.draw, map);
-    });
-
-    function drawMap() {
-        var yearDiv = document.querySelector('#year');
-        yearDiv.innerHTML = year;
-        year++;
-        map.properties.column = year;
-        map.update();
-        if (year >= 2014) year = 1990;
-    }
-
-    var mapInterval = setInterval(drawMap, 200);
+    <script src="js/main.js">
     </script>
 </body>
 
