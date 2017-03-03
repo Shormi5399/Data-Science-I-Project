@@ -1,0 +1,58 @@
+ @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro');
+ html {
+     -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+     box-sizing: border-box;
+     font-family: 'Source Sans Pro', sans-serif;
+ }
+ 
+ .container {
+     display: flex;
+     flex-direction: row;
+     justify-content: space-between;
+ }
+ 
+ #year {
+     font-size: 2rem;
+ }
+ 
+ .background {
+     fill: none;
+     pointer-events: all;
+ }
+ 
+ .unit {
+     cursor: pointer;
+     fill: #ccc;
+     stroke: #000;
+     stroke-width: 0.4px;
+ }
+ 
+ .legend-bg {
+     fill: #fff;
+     fill-opacity: 0.8;
+ }
+ 
+ .legend-bar {
+     stroke: #333;
+     stroke-width: 1px;
+ }
+ /*# sourceMappingURL=geomap.css.map */
+ 
+ .btn {
+     -webkit-border-radius: 28;
+     -moz-border-radius: 28;
+     border-radius: 28px;
+     color: #333;
+     font-size: 1rem;
+     background: #ffffff;
+     padding: 5px 10px 5px 10px;
+     border: solid #333 2px;
+     text-decoration: none;
+ }
+ 
+ .btn:hover {
+     background: #333;
+     color: #fff;
+     text-decoration: none;
+ }
