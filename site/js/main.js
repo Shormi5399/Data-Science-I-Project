@@ -101,9 +101,11 @@ function buttonHandler(e) {
             console.log(e.target.dataset.action);
             let callFunc = 'iterMap(' + stopYear + ', "next")';
             console.log(callFunc);
+            e.target.classList.remove('selected');
             mapInterval = setInterval(callFunc, 400);
             // mapInterval = setInterval('iterMap(2014, "next")', 400);
         } else {
+            e.target.classList.add('selected');
             window.clearInterval(mapInterval);
             mapInterval = null;
         }
