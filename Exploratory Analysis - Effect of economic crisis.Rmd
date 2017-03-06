@@ -537,62 +537,6 @@ library('lmtest')
 ```
 
 
-```{r}
-par(mfrow=c(2,2))
-
-#Subset data for NAC region from 1991 and 2014 and convert it to time series
-
-Country_Code_Data <- c("NAC","EUU","SAS")
-
-for(i in 1:length(Country_Code_Data))
-{
-unemp_reg <-region_data %>% select(Year,Unemployment.Rate,Country.Code) %>% filter(Country.Code == Country_Code_Data[i])  
-unemp_reg_ts <- ts(as.vector(unemp_reg$Unemployment.Rate),start = c(1991,1), end = c(2014), frequency = 1)
-
-#Get data only until 2007 for NAC region and convert it to time series
-
-unemp_reg_bc <- unemp_reg %>% filter(Year >=1991 & Year<=2007)
-unemp_reg_bc_ts <- ts(as.vector(unemp_reg_bc$Unemployment.Rate),start = c(1991,1), end = c(2007), frequency = 1)
-
-#Get data only until 2007 for NAC region and convert it to time series
-
-unemp_reg_ac <- unemp_reg %>% filter(Year >=1991 & Year<=2008)
-unemp_reg_ac_ts <- ts(as.vector(unemp_reg_ac$Unemployment.Rate),start = c(1991,1), end = c(2008), frequency = 1)
-
-
-#install.packages("forecast")
-library(forecast)
-
-#Plotting US Trade data with all data
-
-plot(unemp_reg_ts, xlim = c(2000,2010))
-
-#Arima model for US Trade data only until crisis
-
-mod_unemp_bc<- auto.arima(unemp_reg_bc_ts)
-unemp_forecast_bc<-forecast.Arima(mod_unemp_bc)
-plot.forecast(unemp_forecast_bc, xlim = c(2000,2010))
-
-#Arima model for US Trade data after crisis until 2008
-
-#mod_cpi_ac<- auto.arima(cpi_reg_ac_ts)
-#cpi_forecast_ac<-forecast.Arima(mod_cpi_ac)
-#plot.forecast(cpi_forecast_ac, xlim = c(2000,2010))
-
-#Hypothesis testing for NAC Trade Arima Model
-#install.packages('lmtest')
-library('lmtest')
-
-#Significance test for ARIMA model with data before
-#coeftest(mod_unemp_bc)
-
-#Significance test for ARIMA model with data after crisis until 2008
-#coeftest(mod_cpi_ac)
-
-}
-```
-
-
 
 ```{r}
 par(mfrow=c(2,2))
