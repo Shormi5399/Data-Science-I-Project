@@ -16,6 +16,8 @@ knitr::opts_chunk$set(echo = TRUE)
 library(ggplot2)
 library(tidyr)
 library(dplyr)
+library(forecast)
+library(lmtest)
 ```
 
 Cleaning up the data!
@@ -353,8 +355,7 @@ trendsts.usa <- ts(as.vector(trends.usa$Unemployment.Rate),start = c(1991,1), en
 
 trends.usabc <- region_data  %>% select(Year,Unemployment.Rate,Country.Code) %>% filter(Country.Code == "NAC" & Year >=1991 & Year<=2007)
 trendsts.usabc <- ts(as.vector(trends.usabc$Unemployment.Rate),start = c(1991,1), end = c(2007), frequency = 1)
-#install.packages("forecast")
-library(forecast)
+
 plot(trendsts.usa, ylim = c(2,10), xlim = c(2000,2009))
 
 
@@ -372,8 +373,7 @@ trendsts.usa <- ts(as.vector(trends.usa$Manufacturing.Rate),start = c(1991,1), e
 
 trends.usabc <- region_data  %>% select(Year,Manufacturing.Rate,Country.Code) %>% filter(Country.Code == "NAC" & Year >=1991 & Year<=2007)
 trendsts.usabc <- ts(as.vector(trends.usabc$Manufacturing.Rate),start = c(1991,1), end = c(2007), frequency = 1)
-#install.packages("forecast")
-library(forecast)
+
 plot(trendsts.usa,ylim = c(10,18), xlim = c(2000,2009))
 
 
@@ -391,8 +391,7 @@ trendsts.usa <- ts(as.vector(trends.usa$Trade),start = c(1991,1), end = c(2014),
 
 trends.usabc <- region_data  %>% select(Year,Trade,Country.Code) %>% filter(Country.Code == "NAC" & Year >=1991 & Year<=2007)
 trendsts.usabc <- ts(as.vector(trends.usabc$Trade),start = c(1991,1), end = c(2007), frequency = 1)
-#install.packages("forecast")
-library(forecast)
+
 plot(trendsts.usa, ylim = c(25,38), xlim = c(2000,2009))
 
 
@@ -411,8 +410,7 @@ trendsts.usa <- ts(as.vector(trends.usa$GDP),start = c(1991,1), end = c(2014), f
 
 trends.usabc <- region_data  %>% select(Year,GDP,Country.Code) %>% filter(Country.Code == "NAC" & Year >=1991 & Year<=2007)
 trendsts.usabc <- ts(as.vector(trends.usabc$GDP),start = c(1991,1), end = c(2007), frequency = 1)
-#install.packages("forecast")
-library(forecast)
+
 plot(trendsts.usa, xlim = c(2000,2009))
 
 
@@ -426,7 +424,7 @@ summary(trend.preds)
 
 
 ```{r}
-par(mfrow=c(2,2))
+par(mfrow=c(3,2))
 
 #Subset data for NAC region from 1991 and 2014 and convert it to time series
 
@@ -447,10 +445,6 @@ unemp_reg_bc_ts <- ts(as.vector(unemp_reg_bc$Unemployment.Rate),start = c(1991,1
 unemp_reg_ac <- unemp_reg %>% filter(Year >=1991 & Year<=2008)
 unemp_reg_ac_ts <- ts(as.vector(unemp_reg_ac$Unemployment.Rate),start = c(1991,1), end = c(2008), frequency = 1)
 
-
-#install.packages("forecast")
-library(forecast)
-
 #Plotting US Trade data with all data
 
 plot(unemp_reg_ts, xlim = c(2000,2010))
@@ -468,21 +462,18 @@ plot.forecast(unemp_forecast_bc, xlim = c(2000,2010))
 #plot.forecast(cpi_forecast_ac, xlim = c(2000,2010))
 
 #Hypothesis testing for NAC Trade Arima Model
-#install.packages('lmtest')
-library('lmtest')
 
 #Significance test for ARIMA model with data before
 #coeftest(mod_unemp_bc)
 
 #Significance test for ARIMA model with data after crisis until 2008
 #coeftest(mod_cpi_ac)
-
 }
 ```
 
 
 ```{r}
-par(mfrow=c(2,2))
+par(mfrow=c(3,2))
 
 #Subset data for NAC region from 1991 and 2014 and convert it to time series
 
@@ -503,19 +494,16 @@ gdp_reg_bc_ts <- ts(as.vector(gdp_reg_bc$GDP),start = c(1991,1), end = c(2007), 
 gdp_reg_ac <- gdp_reg %>% filter(Year >=1991 & Year<=2008)
 gdp_reg_ac_ts <- ts(as.vector(gdp_reg_ac$GDP),start = c(1991,1), end = c(2008), frequency = 1)
 
-
-#install.packages("forecast")
-library(forecast)
-
 #Plotting US Trade data with all data
 
-plot(gdp_reg_ts, xlim = c(2000,2010))
+
+plot(gdp_reg_ts, xlim = c(1995,2010))
 
 #Arima model for US Trade data only until crisis
 
 mod_gdp_bc<- auto.arima(gdp_reg_bc_ts)
 gdp_forecast_bc<-forecast.Arima(mod_gdp_bc)
-plot.forecast(gdp_forecast_bc, xlim = c(2000,2010))
+plot.forecast(gdp_forecast_bc, xlim = c(1995,2015))
 
 #Arima model for US Trade data after crisis until 2008
 
@@ -524,22 +512,19 @@ plot.forecast(gdp_forecast_bc, xlim = c(2000,2010))
 #plot.forecast(cpi_forecast_ac, xlim = c(2000,2010))
 
 #Hypothesis testing for NAC Trade Arima Model
-#install.packages('lmtest')
-library('lmtest')
 
 #Significance test for ARIMA model with data before
 #coeftest(mod_gdp_bc)
 
 #Significance test for ARIMA model with data after crisis until 2008
 #coeftest(mod_gdp_ac)
-
 }
 ```
 
 
 
 ```{r}
-par(mfrow=c(2,2))
+par(mfrow=c(3,2))
 
 #Subset data for NAC region from 1991 and 2014 and convert it to time series
 
@@ -560,10 +545,6 @@ manu_reg_bc_ts <- ts(as.vector(manu_reg_bc$Manufacturing.Rate),start = c(1991,1)
 manu_reg_ac <- manu_reg %>% filter(Year >=1991 & Year<=2008)
 manu_reg_ac_ts <- ts(as.vector(manu_reg_ac$Manufacturing.Rate),start = c(1991,1), end = c(2008), frequency = 1)
 
-
-#install.packages("forecast")
-library(forecast)
-
 #Plotting US Trade data with all data
 
 plot(manu_reg_ts, xlim = c(2000,2010))
@@ -581,8 +562,6 @@ plot.forecast(manu_forecast_bc, xlim = c(2000,2010))
 #plot.forecast(cpi_forecast_ac, xlim = c(2000,2010))
 
 #Hypothesis testing for NAC Trade Arima Model
-#install.packages('lmtest')
-library('lmtest')
 
 #Significance test for ARIMA model with data before
 coeftest(mod_manu_bc)
@@ -595,7 +574,7 @@ coeftest(mod_manu_bc)
 
 
 ```{r}
-par(mfrow=c(2,2))
+par(mfrow=c(3,2))
 
 #Subset data for NAC region from 1991 and 2014 and convert it to time series
 
@@ -616,10 +595,6 @@ cpi_reg_bc_ts <- ts(as.vector(cpi_reg_bc$Trade),start = c(1991,1), end = c(2007)
 cpi_reg_ac <- cpi_reg %>% filter(Year >=1991 & Year<=2008)
 cpi_reg_ac_ts <- ts(as.vector(cpi_reg_ac$Trade),start = c(1991,1), end = c(2008), frequency = 1)
 
-
-#install.packages("forecast")
-library(forecast)
-
 #Plotting US Trade data with all data
 
 plot(cpi_reg_ts, xlim = c(2000,2010))
@@ -637,8 +612,6 @@ plot.forecast(cpi_forecast_bc, xlim = c(2000,2010))
 #plot.forecast(cpi_forecast_ac, xlim = c(2000,2010))
 
 #Hypothesis testing for NAC Trade Arima Model
-#install.packages('lmtest')
-library('lmtest')
 
 #Significance test for ARIMA model with data before
 coeftest(mod_cpi_bc)
@@ -675,8 +648,6 @@ adf.test(trends.ts)
 acf(trends.ts)
 pacf(trends.ts)
 #this is an AR model
-#install.packages('forecast')
-#library('forecast')
 auto.arima(trends.ts)
 trends.arimausa<- arima(trends.ts, order=c(1,2,1))
 trends.arimausa
@@ -685,8 +656,6 @@ plot.forecast(trend.preds)
 summary(trend.preds)
 
 #Hypothesis testing for USA CPI data
-#install.packages('lmtest')
-library('lmtest')
 coeftest(trends.arimausa)
 #z value is 2.2014, p=0.02771
 #another way to obtain p value to verify
