@@ -1,7 +1,5 @@
-// TODO
-// Button highlight logic
-
-let map;
+let map = d3.geomap()
+    .geofile('data/countries.json');
 let initYear;
 let stopYear;
 let x;
@@ -12,21 +10,29 @@ let config = {
         file: 'data/unemployment.csv',
         colorscheme: colorbrewer.YlOrRd[9],
         startYear: 1991,
-        stopYear: 2014
+        stopYear: 2014,
+        selected: false
     },
     trade: {
         file: 'data/trade.csv',
         colorscheme: colorbrewer.YlGn[9],
         startYear: 1960,
-        stopYear: 2015
+        stopYear: 2015,
+        selected: false
     },
     inflation: {
         file: 'data/inflation.csv',
         colorscheme: colorbrewer.YlOrRd[9],
         startYear: 1960,
-        stopYear: 2015
+        stopYear: 2015,
+        selected: false
     }
 }
+
+
+
+d3.select('#map')
+    .call(map.draw, map);
 
 let format = function(d) {
     return d3.format(',.02f')(d) + '%';
@@ -95,9 +101,11 @@ function buttonHandler(e) {
             console.log(e.target.dataset.action);
             let callFunc = 'iterMap(' + stopYear + ', "next")';
             console.log(callFunc);
+            e.target.classList.remove('selected');
             mapInterval = setInterval(callFunc, 400);
             // mapInterval = setInterval('iterMap(2014, "next")', 400);
         } else {
+            e.target.classList.add('selected');
             window.clearInterval(mapInterval);
             mapInterval = null;
         }
@@ -114,6 +122,12 @@ function buttonHandler(e) {
     }
 
     d3.select('svg').remove();
+
+    buttons.forEach(b => {
+        b.classList.remove('selected');
+    });
+
+    e.target.classList.add('selected');
 
     dataBind(config[`${e.target.dataset.action}`].file);
     initMap(config[`${e.target.dataset.action}`].startYear, config[`${e.target.dataset.action}`].colorscheme);
