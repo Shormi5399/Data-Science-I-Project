@@ -18,7 +18,7 @@ library(lmtest)
 ```
 
 
-Let's understand the effect of CPI,GDP and Unemployment further by analyzing trend graph from 1991 to 2014 in USA,Canada,China and India.
+Let's understand the effect of CPI,GDP and Unemployment further by analyzing trend graph from 1991 to 2014 in North America(NAC),European Union(EUU) and South Asia(SAS).
 
 Are there obvious trends in the data (over time, across subgroups, etc.), and are the differences statistically significant?
 
