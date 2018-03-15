@@ -17,7 +17,6 @@ library(forecast)
 library(lmtest)
 ```
 
-
 Let's understand the effect of CPI,GDP and Unemployment further by analyzing trend graph from 1991 to 2014 in North America(NAC),European Union(EUU) and South Asia(SAS).
 
 Are there obvious trends in the data (over time, across subgroups, etc.), and are the differences statistically significant?
@@ -52,6 +51,18 @@ trade_compare <- region_data %>%
   group_by(Year)
 
 ggplot(trade_compare,aes(x = Year, y = Trade, col = Country.Code, group = Country.Code)) +geom_line(na.rm = T,lwd = 1)+ theme(axis.text.x=element_text(angle=90, hjust=1))
+
+```
+
+
+```{r}
+gdp_compare <- region_data %>%
+  select(Country.Name,Country.Code,Year,GDP) %>%
+  filter(Year >= 1991 & Year<= 2014 & (Country.Code =='EUU'| Country.Code == 'SAS' | Country.Code == 'NAC')) %>%
+  group_by(Year)
+
+ggplot(gdp_compare,aes(x = Year, y = GDP, col = Country.Code, group = Country.Code)) +geom_line(na.rm = T,lwd = 1)+ theme(axis.text.x=element_text(angle=90, hjust=1))
+
 ```
 
 Understanding time series implementation for CPI in USA:
@@ -168,7 +179,7 @@ plot(trendsts.eu, ylim = c(2,10), xlim = c(2000,2010), xlab="EUU Actual Unemploy
 trends.arimaeu<- auto.arima(trendsts.euac,seasonal = FALSE)
 trends.arimaeu
 trend.preds<-forecast.Arima(trends.arimaeu,h=12)
-plot.forecast(trend.preds, ylim = c(2,10), xlim = c(2000,2010),xlab="NAC Unemployment fcst, 1991-2008 data", ylab="% Unemployment")
+plot.forecast(trend.preds, ylim = c(2,10), xlim = c(2000,2010),xlab="EUU Unemployment fcst, 1991-2008 data", ylab="% Unemployment")
 ```
 
 ```{r}
@@ -404,3 +415,5 @@ plot.forecast(trend.preds,ylim = c(0e+12, 3e+12),xlim = c(2000,2010), xlab="SAS 
 ```
 
 CPI data was unavailable at region-level. So we could not perform time series analysis for CPI.
+
+
