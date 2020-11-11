@@ -1,11 +1,10 @@
 ---
-title: "Time Series Analysis - Effect of Economic Crisis"
-author: "Sneha Vasanth, Janani Kumar, Tigh Bradley, Gaurav Gada"
-date: "February 21, 2017"
+title: "Complete Analysis - Effect of Economic Crisis"
+author: "Sharmila Biswas"
 output: html_document
 ---
 
-Github link: https://github.com/snehavcs/Data-Science-I-Project
+Github link: https://github.com/Shormi5399/Data-Science-I-Project
 
 
 ```{r setup, include=FALSE}
